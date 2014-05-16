@@ -1,11 +1,12 @@
 module RoadRunner
   class Runner
-    attr_reader :files
+    attr_reader :files, :methods_filter
 
-    def initialize(files)
-      files.each do |file|
-        require file
-      end
+    def initialize(files, methods_filter: "*")
+      @files = files
+      @methods_filter = methods_filter
+
+      require_files
     end
 
     def run!
@@ -24,6 +25,12 @@ module RoadRunner
     end
 
     private
+    def require_files
+      files.each do |file|
+        require file
+      end
+    end
+
     def formatter
       @formatter ||= Formatters::Classic.new
     end
@@ -33,7 +40,11 @@ module RoadRunner
     end
 
     def test_methods(klass)
-      klass.public_methods(false).select{|m| m[0, 4] == "test" }
+      klass.public_methods(false).select{|m| m[0, 4] == "test" && matches_method_filter?(m) }
+    end
+
+    def matches_method_filter?(method_name)
+      !!method_name.match(Regexp.new(methods_filter))
     end
 
     def suites
