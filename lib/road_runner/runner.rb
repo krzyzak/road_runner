@@ -13,11 +13,11 @@ module RoadRunner
         test_methods(suite).each do |test|
           begin
             suite.public_send(test)
+            formatter.success
           rescue Minitest::Assertion => e
             reporter.fail(e)
             formatter.fail
           end
-          formatter.success
         end
       end
       reporter.report
