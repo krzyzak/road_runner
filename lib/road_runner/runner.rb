@@ -2,7 +2,7 @@ module RoadRunner
   class Runner
     attr_reader :files, :methods_filter
 
-    def initialize(files, methods_filter: "*")
+    def initialize(files, methods_filter: ".*")
       @files = files
       @methods_filter = methods_filter
 
