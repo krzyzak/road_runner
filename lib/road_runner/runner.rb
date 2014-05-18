@@ -1,8 +1,9 @@
 module RoadRunner
   class Runner
-    attr_reader :files, :methods_filter, :random
+    attr_reader :files, :methods_filter, :random, :fail_fast
 
-    def initialize(files, methods_filter: ".*", seed: rand(10_000))
+    def initialize(files, methods_filter: ".*", seed: rand(10_000), fail_fast:)
+      @fail_fast = fail_fast
       @random = Random.new(seed.to_i)
       @files = files
       @methods_filter = methods_filter
@@ -20,6 +21,7 @@ module RoadRunner
           rescue Minitest::Assertion => e
             reporter.fail(e)
             formatter.fail
+            return if fail_fast
           end
         end
       end

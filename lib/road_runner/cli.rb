@@ -12,6 +12,11 @@ module RoadRunner
       short: "-s SEED",
       long: "--seed SEED"
 
+    option :fail_fast,
+      long: "--fail-fast",
+      default: false,
+      boolean: true
+
     def run
       path = parse_options
 
