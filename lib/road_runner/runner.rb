@@ -16,6 +16,7 @@ module RoadRunner
       suites.each do |suite|
         test_methods(suite).each do |test|
           begin
+            reporter.increment_tests_count!
             suite.public_send(test)
             formatter.success
           rescue Minitest::Assertion => e
