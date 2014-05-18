@@ -1,5 +1,5 @@
-require "bundler/setup"
-require "minitest"
+require "bundler"
+Bundler.require(:default)
 
 require "road_runner/cli"
 require "road_runner/runner"
