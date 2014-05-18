@@ -8,6 +8,10 @@ module RoadRunner
       short: "-m method_name",
       long: "--method method_name"
 
+    option :seed,
+      short: "-s SEED",
+      long: "--seed SEED"
+
     def run
       path = parse_options
 

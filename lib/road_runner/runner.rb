@@ -1,11 +1,13 @@
 module RoadRunner
   class Runner
-    attr_reader :files, :methods_filter
+    attr_reader :files, :methods_filter, :random
 
-    def initialize(files, methods_filter: ".*")
+    def initialize(files, methods_filter: ".*", seed: rand(10_000))
+      @random = Random.new(seed.to_i)
       @files = files
       @methods_filter = methods_filter
 
+      reporter.report_seed_value(random)
       require_files
     end
 
@@ -40,7 +42,7 @@ module RoadRunner
     end
 
     def test_methods(klass)
-      klass.public_methods(false).select{|m| m[0, 4] == "test" && matches_method_filter?(m) }
+      klass.public_methods(false).select{|m| m[0, 4] == "test" && matches_method_filter?(m) }.shuffle(random: random)
     end
 
     def matches_method_filter?(method_name)
@@ -51,9 +53,9 @@ module RoadRunner
       @suites ||= begin
         suites = []
         ObjectSpace.each_object(class << MiniTest::Test; self; end) do |klass|
-          suites.unshift klass.new(klass) unless klass == self
+          suites << klass.new(klass) unless klass == self
         end
-        suites
+        suites.shuffle(random: random)
       end
     end
   end

@@ -7,6 +7,10 @@ module RoadRunner
         @exceptions = []
       end
 
+      def report_seed_value(random)
+        puts "Initialized with #{random.seed}"
+      end
+
       def report
         puts "\n Test suite report"
         exceptions.each do |exception|
