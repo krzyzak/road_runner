@@ -72,7 +72,8 @@ module RoadRunner
       @suites ||= begin
         suites = []
         ObjectSpace.each_object(class << MiniTest::Test; self; end) do |klass|
-          suites << klass.new(klass) unless klass == self
+          object = klass.new(klass)
+          suites << object if klass != self && !test_methods(object).empty?
         end
         suites.shuffle(random: random)
       end
