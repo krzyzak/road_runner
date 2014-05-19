@@ -1,7 +1,7 @@
 module RoadRunner
   module Reporters
     class Classic
-      attr_reader :exceptions
+      attr_reader :exceptions, :monitor
 
       def initialize(monitor: monitor)
         @monitor = monitor
@@ -36,7 +36,7 @@ module RoadRunner
 
       private
       def banner
-        puts "\nFinished in 4.65 seconds"
+        puts "\nFinished in #{monitor.total_execution_time} seconds"
         puts "#{@tests} examples, #{failed_tests_size} failures"
         puts "Failed Examples:\n"
       end

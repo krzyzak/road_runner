@@ -3,6 +3,7 @@ module RoadRunner
     attr_reader :suites, :tests
 
     def initialize
+      @start = Time.now
       @suites = {}
       @tests = {}
     end
@@ -15,6 +16,10 @@ module RoadRunner
     def test(name, &block)
       time = calculate_time(&block)
       @tests[name] = time
+    end
+
+    def total_execution_time
+      Time.now - @start
     end
 
     private
