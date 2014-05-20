@@ -1,4 +1,7 @@
 require "bundler"
+gem "minitest"
+require "minitest"
+
 Bundler.require(:default, :test)
 
 require "road_runner/cli"
