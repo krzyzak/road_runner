@@ -1,3 +1,5 @@
+require "road_runner/minitest_patch"
+
 module RoadRunner
   class Runner
     attr_reader :files, :monitor, :methods_filter, :random, :fail_fast
