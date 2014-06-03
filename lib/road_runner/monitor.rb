@@ -1,16 +1,16 @@
 module RoadRunner
   class Monitor
-    attr_reader :suites, :tests
+    attr_reader :test_cases, :tests
 
     def initialize
       @start = Time.now
-      @suites = {}
+      @test_cases = {}
       @tests = {}
     end
 
-    def suite(name, &block)
+    def test_case(name, &block)
       time = calculate_time(&block)
-      @suites[name] = time
+      @test_cases[name] = time
     end
 
     def test(name, &block)

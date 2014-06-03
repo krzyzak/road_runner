@@ -18,7 +18,8 @@ module RoadRunner
       boolean: true
 
     def run
-      path = parse_options
+      path = parse_options.empty? ? Dir["test/**/*_test.rb"] : parse_options
+      $:.unshift File.expand_path("test", Dir.pwd)
 
       Runner.new(path, config).run!
     end

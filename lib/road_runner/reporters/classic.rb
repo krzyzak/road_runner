@@ -23,8 +23,8 @@ module RoadRunner
           puts exception.location
         end
 
-        puts "Slowest suites:"
-        print_results_sorted_by_time(@monitor.suites)
+        puts "Slowest test_cases:"
+        print_results_sorted_by_time(@monitor.test_cases)
 
         puts "Slowest methods:"
         print_results_sorted_by_time(@monitor.tests)

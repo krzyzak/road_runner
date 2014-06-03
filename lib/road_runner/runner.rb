@@ -2,51 +2,42 @@ require "road_runner/minitest_patch"
 
 module RoadRunner
   class Runner
-    attr_reader :files, :monitor, :methods_filter, :random, :fail_fast
+    attr_reader :files, :random, :file_runner
 
     def initialize(files, methods_filter: ".*", seed: rand(10_000), fail_fast:)
-      @fail_fast = fail_fast
+      Rails.env = "test" if defined?(Rails)
+
       @random = Random.new(seed.to_i)
       @files = files
-      @methods_filter = methods_filter
+      @file_runner = FileRunner.new(random: random, monitor: monitor, formatter: formatter, reporter: reporter, methods_filter: methods_filter, fail_fast: fail_fast)
 
       reporter.report_seed_value(random)
       require_files
     end
 
     def run!
-      suites.each do |suite|
-        run_suite!(suite)
+      test_cases.each do |test_case|
+        with_active_record_transaction do
+          file_runner.test_case = test_case
+          file_runner.run!
+        end
       end
+
       reporter.report
     end
 
     private
+    def with_active_record_transaction(&block)
+      return yield unless defined?(ActiveRecord)
+
+      ActiveRecord::Base.connection.begin_transaction(joinable: false)
+      yield
+      ActiveRecord::Base.connection.rollback_transaction
+    end
+
     def require_files
       files.each do |file|
         require file
-      end
-    end
-
-    def run_suite!(suite)
-      monitor.suite(suite.name) do
-        test_methods(suite).each do |test|
-          reporter.increment_tests_count!
-          run_test!(suite, test)
-        end
-      end
-    end
-
-    def run_test!(suite, test)
-      monitor.test(test) do
-        begin
-          suite.public_send(test)
-        rescue Minitest::Assertion => e
-          reporter.fail(e)
-          formatter.fail
-          return if fail_fast
-        end
-        formatter.success
       end
     end
 
@@ -62,22 +53,14 @@ module RoadRunner
       @reporter ||= Reporters::Classic.new(monitor: monitor)
     end
 
-    def test_methods(klass)
-      klass.public_methods(false).select{|m| m[0, 4] == "test" && matches_method_filter?(m) }.shuffle(random: random)
-    end
-
-    def matches_method_filter?(method_name)
-      !!method_name.match(Regexp.new(methods_filter))
-    end
-
-    def suites
-      @suites ||= begin
-        suites = []
+    def test_cases
+      @test_cases ||= begin
+        test_cases = []
         ObjectSpace.each_object(class << MiniTest::Test; self; end) do |klass|
           object = klass.new(klass)
-          suites << object if klass != self && !test_methods(object).empty?
+          test_cases << object if klass != self && !file_runner.test_methods(object).empty?
         end
-        suites.shuffle(random: random)
+        test_cases.shuffle(random: random)
       end
     end
   end
