@@ -1,10 +1,11 @@
 module RoadRunner
   module Reporters
     class Classic
-      attr_reader :exceptions, :monitor
+      attr_reader :exceptions, :failures, :monitor
 
       def initialize(monitor: monitor)
         @monitor = monitor
+        @failures = []
         @exceptions = []
         @tests = 0
       end
@@ -19,18 +20,29 @@ module RoadRunner
 
       def report
         banner
-        exceptions.each do |exception|
-          puts exception.location
+
+        failures.each do |failure|
+          puts failure.location
+          # puts failure.backtrace
         end
 
-        puts "Slowest test_cases:"
-        print_results_sorted_by_time(@monitor.test_cases)
+        puts "\n Exceptions: \n"
+        exceptions.each do |exception|
+          puts exception#.backtrace
+        end
 
-        puts "Slowest methods:"
-        print_results_sorted_by_time(@monitor.tests)
+        # puts "Slowest test_cases:"
+        # print_results_sorted_by_time(@monitor.test_cases)
+
+        # puts "Slowest methods:"
+        # print_results_sorted_by_time(@monitor.tests)
       end
 
-      def fail(exception)
+      def fail(failure)
+        @failures << failure
+      end
+
+      def error(exception)
         @exceptions << exception
       end
 

@@ -38,6 +38,11 @@ module RoadRunner
         rescue Minitest::Assertion => e
           reporter.fail(e)
           formatter.fail
+          test_case.run_callbacks(:teardown) if active_support_test?
+          return if fail_fast
+        rescue Exception => e
+          reporter.error(e)
+          formatter.error
           return if fail_fast
         end
         formatter.success

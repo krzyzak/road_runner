@@ -12,6 +12,10 @@ module RoadRunner
       def skip
         print "S"
       end
+
+      def error
+        print "E"
+      end
     end
   end
 end
