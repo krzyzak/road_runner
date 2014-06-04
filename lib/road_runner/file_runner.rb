@@ -19,7 +19,6 @@ module RoadRunner
           reporter.increment_tests_count!
           test_case.run_callbacks(:setup) if active_support_test?
           run_test!(test_case, test)
-          test_case.run_callbacks(:teardown) if active_support_test?
         end
       end
     end
@@ -38,12 +37,13 @@ module RoadRunner
         rescue Minitest::Assertion => e
           reporter.fail(e)
           formatter.fail
-          test_case.run_callbacks(:teardown) if active_support_test?
           return if fail_fast
         rescue Exception => e
           reporter.error(e)
           formatter.error
           return if fail_fast
+        ensure
+          test_case.run_callbacks(:teardown) if active_support_test?
         end
         formatter.success
       end
