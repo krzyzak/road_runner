@@ -43,10 +43,15 @@ module RoadRunner
           formatter.error
           return if fail_fast
         ensure
+          undefine_instance_variables(test_case)
           test_case.run_callbacks(:teardown) if active_support_test?
         end
         formatter.success
       end
+    end
+
+    def undefine_instance_variables(test_case)
+      test_case.instance_variables.each{|var| test_case.remove_instance_variable(var) unless [:@NAME, :@failures, :@assertions].include?(var) }
     end
 
     def matches_method_filter?(method_name)
