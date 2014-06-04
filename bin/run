@@ -6,6 +6,7 @@ bin_file = Pathname.new(__FILE__).realpath
 $:.unshift File.expand_path("../../lib", bin_file)
 $:.unshift Dir.pwd
 
-require 'road_runner'
+require "road_runner"
+require "road_runner/minitest_patch"
 
 RoadRunner::CLI.new.run
