@@ -8,6 +8,10 @@ module RoadRunner
       def fail
         print "F"
       end
+
+      def skip
+        print "S"
+      end
     end
   end
 end

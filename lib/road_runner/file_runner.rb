@@ -33,6 +33,8 @@ module RoadRunner
       monitor.test(test) do
         begin
           test_case.public_send(test)
+        rescue Minitest::Skip => e
+          formatter.skip
         rescue Minitest::Assertion => e
           reporter.fail(e)
           formatter.fail
