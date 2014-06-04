@@ -17,6 +17,11 @@ module RoadRunner
       default: false,
       boolean: true
 
+    option :color,
+      long: "--color",
+      default: false,
+      boolean: true
+
     def run
       path = parse_options.empty? ? Dir["test/**/*_test.rb"] : parse_options
       $:.unshift File.expand_path("test", Dir.pwd)

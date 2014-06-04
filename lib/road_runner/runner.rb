@@ -2,11 +2,12 @@ module RoadRunner
   class Runner
     attr_reader :files, :random, :file_runner
 
-    def initialize(files, methods_filter: ".*", seed: rand(10_000), fail_fast:)
+    def initialize(files, methods_filter: ".*", seed: rand(10_000), fail_fast:, color:)
       Rails.env = "test" if defined?(Rails)
 
       @random = Random.new(seed.to_i)
       @files = files
+      @color = color
       @file_runner = FileRunner.new(random: random, monitor: monitor, formatter: formatter, reporter: reporter, methods_filter: methods_filter, fail_fast: fail_fast)
 
       reporter.report_seed_value(random)
@@ -44,7 +45,7 @@ module RoadRunner
     end
 
     def formatter
-      @formatter ||= Formatters::Classic.new
+      @formatter ||= @color ? Formatters::Color.new : Formatters::Classic.new
     end
 
     def reporter
